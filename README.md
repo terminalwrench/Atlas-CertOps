@@ -97,7 +97,7 @@ Environment variables:
 | `VITE_SUPABASE_PUBLISHABLE_KEY` | For `/app` | Browser-safe Supabase Publishable Key |
 | `VITE_PUBLIC_APP_URL` | Public beta | Canonical public application URL |
 | `VITE_SUPPORT_EMAIL` | Public beta | Support and feedback destination |
-| `VITE_DOCUMENTATION_URL` | Recommended | Documentation link; defaults to `/security` |
+| `VITE_DOCUMENTATION_URL` | Optional | External documentation link; defaults to the built-in `/docs` guide |
 | `VITE_DEMO_INSPECTION_URL` | Static-only hosts | Separately hosted demo inspection endpoint; defaults to `/api/demo-certificates` |
 | `ALLOWED_ORIGIN` | Production Edge Function | Exact browser origin permitted to call production inspection request boundary |
 

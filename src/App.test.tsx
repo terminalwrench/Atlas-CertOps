@@ -43,6 +43,41 @@ describe('route isolation', () => {
       expect(screen.queryByText('Customer not found')).not.toBeInTheDocument()
     },
   )
+  it.each(demoData.deployments.map((deployment) => [deployment.id, deployment.name]))(
+    'renders demo deployment target detail %s',
+    async (id, targetName) => {
+      renderRoute(`/demo/deployments/${id}`)
+      expect(await screen.findByRole('heading', { name: targetName })).toBeInTheDocument()
+      expect(screen.queryByText('Deployment target not found')).not.toBeInTheDocument()
+    },
+  )
+  it('supports certificate to target to customer navigation for the failed validation story', async () => {
+    const certificateView = renderRoute('/demo/certificates/cert-4')
+    expect(await screen.findByRole('link', { name: /Staging Citrix Gateway/ })).toHaveAttribute('href', '/demo/deployments/dep-6')
+    certificateView.unmount()
+    renderRoute('/demo/deployments/dep-6')
+    expect(await screen.findByRole('link', { name: /citrix-stg.northstar-health.example/ })).toHaveAttribute('href', '/demo/certificates/cert-4')
+    expect(screen.getByRole('link', { name: /Open Northstar Health/ })).toHaveAttribute('href', '/demo/customers/cust-northstar')
+    expect(screen.getByText(/Observed: Endpoint still presents expired serial/)).toBeInTheDocument()
+  })
+  it('renders public documentation and security routes', async () => {
+    const docs = renderRoute('/docs')
+    expect(await screen.findByRole('heading', { name: "Operate the certificate lifecycle’s last mile." })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'Demo and production workspaces' })).toBeInTheDocument()
+    docs.unmount()
+    renderRoute('/security')
+    expect(await screen.findByRole('heading', { name: 'Security at Atlas CertOps' })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'Current controls' })).toBeInTheDocument()
+    expect(screen.getByText(/does not claim a formal compliance certification/)).toBeInTheDocument()
+  })
+  it('shows a real not-found page for invalid public and demo routes', async () => {
+    const publicView = renderRoute('/not-a-real-route')
+    expect(await screen.findByRole('heading', { name: "This page isn’t in the Atlas map." })).toBeInTheDocument()
+    publicView.unmount()
+    renderRoute('/demo/not-a-real-route')
+    expect(await screen.findByRole('heading', { name: "This page isn’t in the Atlas map." })).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'Open demo' })).toHaveAttribute('href', '/demo')
+  })
   it('does not load demo fixtures for an unavailable production provider', async () => {
     renderRoute('/app')
     expect(await screen.findByText('Sign in to Atlas')).toBeInTheDocument()
