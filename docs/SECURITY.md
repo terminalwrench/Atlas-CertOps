@@ -4,7 +4,7 @@ Atlas CertOps is an operational metadata system, not a CA or secret store. The s
 
 ## Trust boundaries
 
-- Supabase Auth establishes identity. Organization membership maps identity to one role.
+- Supabase Auth establishes identity. Organization membership maps identity to one role. `/app` refuses access until both are resolved; `/demo` uses a separate fixture provider and never opens an operational repository.
 - RLS is the authoritative tenant boundary. Every tenant table carries `organization_id`; policies resolve membership from `auth.uid()`.
 - UI permissions improve usability but do not replace RLS.
 - Audit events are append-oriented. Operators may insert them but no client policy permits update or delete.
@@ -12,4 +12,6 @@ Atlas CertOps is an operational metadata system, not a CA or secret store. The s
 
 ## Assumptions and residual risks
 
-The initial organization and owner membership must be provisioned through a trusted administrative path. Before production, test every RLS policy against a dedicated staging project, configure an exact `ALLOWED_ORIGIN`, enable Supabase abuse controls, and place function-level rate limiting in front of endpoint inspection. Public DNS can change between resolution and connection, so do not extend discovery to arbitrary scanning without a network-isolated collector and explicit authorization records.
+The `bootstrap_organization` security-definer RPC is the only self-service bootstrap path. It requires `auth.uid()`, creates a new organization, refuses users with an existing membership, and assigns only the caller as Owner; it never accepts an organization ID or role from the browser. Before production, test every RLS policy against a dedicated staging project with users in different tenants and roles, configure an exact `ALLOWED_ORIGIN`, enable Supabase abuse controls, and place function-level rate limiting in front of endpoint inspection. Public DNS can change between resolution and connection, so do not extend discovery to arbitrary scanning without a network-isolated collector and explicit authorization records.
+
+Frontend deployments may receive only `VITE_SUPABASE_URL` and `VITE_SUPABASE_PUBLISHABLE_KEY`. Supabase Secret Keys, `service_role`, database passwords, private keys, vendor credentials, and secret values must never enter the browser bundle.

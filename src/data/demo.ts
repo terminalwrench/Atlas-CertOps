@@ -9,6 +9,11 @@ export const demoData: AtlasData = {
     { id: 'cust-redwood', name: 'Redwood Financial', slug: 'redwood-financial', industry: 'Financial Services', environments: ['Production', 'Disaster Recovery'] },
     { id: 'cust-helio', name: 'Helio Commerce', slug: 'helio-commerce', industry: 'Retail', environments: ['Production', 'Development'] },
   ],
+  environments: [
+    { id: 'env-northstar-prod', customerId: 'cust-northstar', name: 'Production', kind: 'production' }, { id: 'env-northstar-stg', customerId: 'cust-northstar', name: 'Staging', kind: 'staging' },
+    { id: 'env-redwood-prod', customerId: 'cust-redwood', name: 'Production', kind: 'production' }, { id: 'env-redwood-dr', customerId: 'cust-redwood', name: 'Disaster Recovery', kind: 'dr' },
+    { id: 'env-helio-prod', customerId: 'cust-helio', name: 'Production', kind: 'production' }, { id: 'env-helio-dev', customerId: 'cust-helio', name: 'Development', kind: 'development' },
+  ],
   certificates: [
     { id: 'cert-1', customerId: 'cust-northstar', environment: 'Production', commonName: '*.northstarhealth.com', sanNames: ['northstarhealth.com', 'portal.northstarhealth.com'], serialNumber: '04:A9:77:21:CF', issuer: 'DigiCert TLS RSA SHA256 2020 CA1', certificateAuthority: 'DigiCert', notBefore: ago(330), expiresAt: fromNow(5), fingerprint: '8A:29:DE:90:11:CB:45:7C:9E:3D', renewalMethod: 'DigiCert portal', owner: 'Maya Chen', ownerTeam: 'Platform Operations', notes: 'Public patient portal wildcard.', statusOverride: 'Renewal In Progress' },
     { id: 'cert-2', customerId: 'cust-redwood', environment: 'Production', commonName: 'vpn.redwoodfinancial.com', sanNames: ['vpn.redwoodfinancial.com'], serialNumber: '91:77:12:2A:80', issuer: 'GlobalSign RSA OV SSL CA 2018', certificateAuthority: 'GlobalSign', notBefore: ago(350), expiresAt: fromNow(11), fingerprint: 'F1:AD:73:03:A9:92:5A:40', renewalMethod: 'Vendor managed', owner: 'Noah Williams', ownerTeam: 'Network Engineering', notes: 'VPN gateway; vendor maintenance required.' },

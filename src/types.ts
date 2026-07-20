@@ -4,6 +4,8 @@ export type WorkflowStatus = 'Upcoming' | 'Renewal Required' | 'Requested' | 'Is
 export type TaskStatus = 'Pending' | 'In Progress' | 'Blocked' | 'Completed' | 'Failed'
 export type DeploymentMethod = 'Automated' | 'Manual' | 'Vendor Assisted' | 'External System'
 
+export interface Organization { id: string; name: string; slug: string }
+export interface Environment { id: string; customerId: string; name: string; kind: string }
 export interface Customer { id: string; name: string; slug: string; industry: string; environments: string[] }
 export interface Certificate {
   id: string; customerId: string; environment: string; commonName: string; sanNames: string[]; serialNumber: string; issuer: string; certificateAuthority: string; notBefore: string; expiresAt: string; fingerprint: string; renewalMethod: string; owner: string; ownerTeam: string; notes: string; statusOverride?: CertificateStatus
@@ -15,4 +17,4 @@ export interface Runbook { id: string; deploymentId: string; title: string; desc
 export interface ValidationCheck { id: string; certificateId: string; deploymentId: string; type: 'Automatic TLS' | 'Manual'; expected: string; actual: string; checkedAt: string; success: boolean }
 export interface AuditEvent { id: string; action: string; entityType: string; entityId: string; actor: string; timestamp: string; metadata: string }
 export interface Notification { id: string; title: string; message: string; severity: 'info' | 'warning' | 'critical'; read: boolean; createdAt: string }
-export interface AtlasData { customers: Customer[]; certificates: Certificate[]; deployments: Deployment[]; workflows: RenewalWorkflow[]; tasks: RenewalTask[]; runbooks: Runbook[]; validations: ValidationCheck[]; auditEvents: AuditEvent[]; notifications: Notification[] }
+export interface AtlasData { customers: Customer[]; environments: Environment[]; certificates: Certificate[]; deployments: Deployment[]; workflows: RenewalWorkflow[]; tasks: RenewalTask[]; runbooks: Runbook[]; validations: ValidationCheck[]; auditEvents: AuditEvent[]; notifications: Notification[] }

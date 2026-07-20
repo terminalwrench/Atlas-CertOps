@@ -6,3 +6,4 @@ export const endpointInspectionSchema = z.object({
 })
 
 export const certificateInputSchema = z.object({ commonName: z.string().trim().min(1).max(253), customerId: z.string().min(1), environment: z.string().min(1), expiresAt: z.string().datetime(), issuer: z.string().trim().min(1), renewalMethod: z.string().trim().min(1) })
+export const organizationNameSchema = z.string().trim().min(2).max(100)

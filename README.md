@@ -1,45 +1,47 @@
 # Atlas CertOps
 
-Certificate lifecycle operations and deployment orchestration for MSPs and lean infrastructure teams.
+Certificate lifecycle operations and deployment orchestration for MSPs and lean infrastructure teams. Atlas tracks the operational last mile after issuance: every deployment location, owner, renewal task, external handoff, and validation result. It complements PKI platforms and never issues certificates or stores private keys.
 
-Atlas CertOps tracks the operational last mile after a certificate is issued: where it is deployed, who owns each target, how replacement happens, which handoffs are blocked, and whether every required validation passed. It complements CAs and PKI platforms; it does not issue certificates, hold private keys, or act as a general-purpose vault.
+## Operating modes
 
-## MVP capabilities
+Atlas has two intentionally separate modes in the same build:
 
-- Premium responsive operations dashboard focused on imminent risk
-- Searchable/filterable certificate inventory with derived expiration health
-- Certificate detail views with metadata, deployments, runbooks, validations, workflows, and audit history
-- Urgency-sorted renewal queue with deployment, validation, and vendor-handoff tasks
-- Interactive demo task completion, retry, manual certificate entry, notification state, and audit events
-- MSP customer estate, deployment target inventory, runbooks, activity, integrations, and settings views
-- Explicit demo mode when Supabase is not configured
-- Supabase Auth session persistence and protected routes when configured
-- Multi-tenant PostgreSQL schema, role-aware RLS, composite tenant foreign keys, append-oriented audit events, plan limits, and an atomic renewal completion guard
-- Authenticated, bounded endpoint-reachability Edge Function with input validation and SSRF safeguards
+- `/demo` is a public sales workspace. `DemoDataProvider` loads fictional customers, environments, certificates, deployments, renewals, vendor blocks, validations, runbooks, notifications, and audit events. Mutations remain in browser memory and reset on refresh. It never initializes an operational Supabase repository.
+- `/app` is the authenticated production workspace. `SupabaseDataProvider` starts empty, resolves the signed-in user’s organization, and loads/persists only RLS-visible PostgreSQL rows. A fetch or authorization failure produces a real error and never falls back to fixtures.
+- `/login` and `/signup` use Supabase Auth. `/onboarding` atomically creates a first organization and Owner membership for an authenticated user with no membership.
+
+Root traffic redirects to `/demo`, so a configured production deployment can still be used for prospect demonstrations without exposing customer data.
+
+## Product capabilities
+
+- Operational dashboard, certificate inventory/detail, renewal queue, vendor handoffs, deployment targets, validations, customers, runbooks, activity, notifications, integrations, and settings
+- Persistent production reads across all core entities
+- Production creation for customers, environments, certificate metadata, deployment targets, runbooks, renewals, tasks, validations, and audit events
+- Persistent task completion/retry and notification read state
+- Database-guarded renewal creation/completion rules
+- Supabase Auth session persistence, signup, login, logout, protected routes, membership resolution, and organization bootstrap
+- True multi-tenancy using `organization_id`, composite tenant foreign keys, role-aware RLS, and append-oriented audit history
+- Responsive premium dark interface with intentional loading, failure, and empty states
+- Authenticated, SSRF-conscious endpoint reachability function
 
 ## Architecture
 
-Atlas is one React 19 + Vite + TypeScript web application. `AuthContext` isolates authentication, and `DataContext` is the application-facing data boundary. The current demo provider supplies operational sample data and in-memory mutations; production Supabase access can be implemented behind the same boundary without changing pages.
+Atlas is one React 19, Vite, and TypeScript application. Pages consume a shared `DataState` interface. The demo and production providers implement that interface independently; raw Supabase queries are centralized in `SupabaseDataRepository`.
 
-PostgreSQL is the authoritative production data store. Every operational record is scoped by `organization_id`; Supabase RLS checks organization membership and role. Owner/Admin manage inventory and configuration, Operator may execute workflows and validations, and Viewer is read-only. Database policies—not UI affordances—are the security boundary.
-
-No table accepts certificate private keys. Future secret-bearing integrations should resolve external secret references through a trusted server-side adapter.
+Supabase PostgreSQL is authoritative in production. Owner and Admin manage operational inventory, Operator executes renewal/deployment/validation work, and Viewer is read-only. UI affordances are secondary; RLS is the security boundary.
 
 ## Local development
 
-Requirements: Node.js 20+ and pnpm 9+.
+Requires Node.js 20+ and pnpm 9+.
 
 ```bash
 pnpm install
 pnpm dev
 ```
 
-Open `http://localhost:5173`. With no environment variables, Atlas clearly identifies itself as a demo workspace and loads realistic sample customers, expiration states, an active renewal, a vendor block, and a failed validation.
-
-### Commands
+Open `http://localhost:5173/demo`. Demo mode requires no account and works whether Supabase is configured or not.
 
 ```bash
-pnpm dev
 pnpm lint
 pnpm typecheck
 pnpm test
@@ -49,53 +51,47 @@ pnpm build
 ## Supabase setup
 
 1. Create a Supabase project.
-2. Apply `supabase/migrations/202607190001_initial_schema.sql` with the Supabase CLI (`supabase db push`) or SQL editor.
-3. Configure allowed authentication URLs and create the first user.
-4. Through a trusted administrative session, create an organization and its initial `owner` membership. Do not expose service-role credentials to the browser.
-5. Copy `.env.example` to `.env.local` and set:
+2. Apply all migrations in order:
 
-```env
-VITE_SUPABASE_URL=https://YOUR_PROJECT.supabase.co
-VITE_SUPABASE_ANON_KEY=YOUR_PUBLIC_ANON_KEY
-```
+   ```bash
+   supabase link --project-ref YOUR_PROJECT_REF
+   supabase db push
+   ```
 
-Both values must be present to leave demo mode. Partial configuration is treated as demo mode, never as an ambiguous production fallback.
+   This applies the base schema/RLS migration and the organization-bootstrap/renewal-transition migration.
+3. In Supabase Auth URL Configuration, set the production Site URL and allow redirects to `https://YOUR_APP_HOST/app` (plus the local equivalent for development).
+4. Copy `.env.example` to `.env.local`:
 
-The migration creates the data model, indexes, role functions, RLS policies, update triggers, central plan limits, and `complete_renewal()` guard. Validate it against a staging Supabase project before production deployment.
+   ```env
+   VITE_SUPABASE_URL=https://YOUR_PROJECT.supabase.co
+   VITE_SUPABASE_PUBLISHABLE_KEY=sb_publishable_YOUR_KEY
+   ```
+
+Only the Publishable Key belongs in frontend configuration. Never use a Supabase Secret Key, `service_role` key, or database password in Vite environment variables. `VITE_SUPABASE_ANON_KEY` is accepted temporarily as a compatibility fallback, but the Publishable Key is preferred.
+
+5. Configure email confirmation policy in Supabase Auth. When confirmation is enabled, signup tells the user to confirm email before signing in. When disabled, the authenticated user proceeds directly to `/onboarding`.
+6. Visit `/signup`, authenticate, and create the organization. The `bootstrap_organization` RPC creates only a new organization and assigns the caller Owner; it cannot join an existing tenant or run for a user who already has membership.
+
+No local Supabase credentials are committed. If this checkout is not linked, migrations remain prepared but unapplied.
+
+## Persistence and RLS
+
+All operational tables carry `organization_id`. Composite foreign keys prevent cross-tenant child references. RLS membership checks cover reads, inserts, updates, and deletes. Viewers have no write policies; Operators can update operational task/workflow/deployment state and append validation/audit records; Admins and Owners manage inventory; only Owners manage memberships and ownership-sensitive organization settings.
+
+`start_renewal()` generates target deployment and validation tasks inside PostgreSQL. `complete_renewal()` locks the workflow and refuses completion until every task is complete and every validation task explicitly passed. Important frontend mutations append persistent audit events.
+
+## Production deployment
+
+Build with `pnpm build` and host `dist/` on a static provider configured to rewrite SPA routes to `index.html`. Supply only the URL and Publishable Key at build time. Apply migrations before enabling `/app`. Configure security headers, an exact `ALLOWED_ORIGIN` for Edge Functions, Supabase abuse controls, and rate limiting.
 
 ### Endpoint inspection
 
-`supabase/functions/inspect-tls/index.ts` is an authenticated Edge Function boundary. Deploy it with `supabase functions deploy inspect-tls`, set `ALLOWED_ORIGIN` to the exact application origin, and add platform rate limiting. It accepts only a hostname and port, rejects obvious private/local targets, follows no redirects, and times out quickly.
+Deploy with `supabase functions deploy inspect-tls`. The function requires authentication, accepts only a hostname and port, rejects obvious local/private targets, follows no redirects, and times out. Supabase Edge Functions do not expose peer X.509 metadata, so V1 reports bounded reachability. Full certificate extraction needs a hardened egress-controlled worker with post-DNS private-range checks and request quotas.
 
-Supabase Edge Functions cannot expose the peer X.509 certificate, so the current function reports bounded TLS reachability rather than full certificate metadata. A production certificate inspector should be a hardened server-side worker with DNS resolution pinning, private-range checks after resolution, egress controls, request quotas, and explicit scan authorization. This limitation is deliberate; the function must not become an SSRF proxy.
+## Testing
 
-## Data model
+Vitest covers expiration boundaries, permissions, renewal validation requirements, endpoint input, environment validation, provider selection, route isolation, anonymous demo access, and production no-fallback behavior. Before release, run the full command set above and execute multi-user RLS tests in a staging Supabase project.
 
-The hierarchy is `organizations → customers → environments → certificates → certificate_deployments`. Renewal workflows own ordered/dependent tasks; validations are attached to certificates and targets; runbooks hold structured public operating instructions; notifications and integrations remain tenant scoped. Composite foreign keys ensure a child cannot reference an entity from another tenant even before RLS is evaluated.
+## Security and limitations
 
-Expiration thresholds default to 30 days for warning and 7 days for critical and are organization-configurable in the schema. Subscription limits are centralized in `plan_limits` (Free 10, Pro 100, Team 500, Business 2,500) rather than scattered through feature code.
-
-## Testing and production build
-
-Vitest covers expiration boundaries, role permissions, renewal completion/validation handling, and endpoint input validation. CI should run:
-
-```bash
-pnpm lint && pnpm typecheck && pnpm test && pnpm build
-```
-
-Build output is emitted to `dist/` and can be deployed to any static host with SPA fallback to `index.html`. Provide only the public Supabase URL and anon key at build time. Never expose a service-role key.
-
-## Security
-
-See [docs/SECURITY.md](docs/SECURITY.md) for the threat model and deployment assumptions. Production readiness requires staging RLS tests using multiple real Auth users, exact CORS origins, function rate limiting, security headers at the CDN, monitored audit export, and a trusted bootstrap path for the first owner.
-
-## Known limitations
-
-- The UI currently uses the explicit demo provider; production CRUD mapping behind the provider boundary is the next credential-dependent step.
-- Full TLS certificate extraction is not available in the Supabase Edge runtime; the checked-in function safely reports reachability only.
-- External CA, cloud, appliance, email, Slack/Teams, billing, SSO, and secret-manager integrations require provider credentials and are represented as extension points.
-- Automated private-network discovery requires a separately deployed, customer-authorized collector and is intentionally outside V1.
-
-## Roadmap
-
-Near-term work is a Supabase-backed provider, invitation/bootstrap flow, hardened certificate-inspection worker, scheduled expiration evaluation, in-app notification generation, and first metadata-only CA/cloud adapters. Later work may add SAML/OIDC, collectors, webhooks, and billing without changing the private-key custody boundary.
+See [docs/SECURITY.md](docs/SECURITY.md). External CA/cloud/appliance, email, Slack/Teams, billing, SSO, and private-network collectors remain intentionally out of scope and require external systems or credentials. A live Supabase project is required to execute end-to-end persistence and RLS integration tests; the application code and migrations are prepared without embedding privileged access.
