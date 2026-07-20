@@ -17,4 +17,5 @@ export interface Runbook { id: string; deploymentId: string; title: string; desc
 export interface ValidationCheck { id: string; certificateId: string; deploymentId: string; type: 'Automatic TLS' | 'Manual'; expected: string; actual: string; checkedAt: string; success: boolean }
 export interface AuditEvent { id: string; action: string; entityType: string; entityId: string; actor: string; timestamp: string; metadata: string }
 export interface Notification { id: string; title: string; message: string; severity: 'info' | 'warning' | 'critical'; read: boolean; createdAt: string }
+export interface LiveCertificateMetadata { hostname: string; port: 443; commonName: string; sanNames: string[]; issuer: string; serialNumber: string; validFrom: string; expiresAt: string; fingerprint: string; tlsProtocol: string; inspectedAt: string }
 export interface AtlasData { customers: Customer[]; environments: Environment[]; certificates: Certificate[]; deployments: Deployment[]; workflows: RenewalWorkflow[]; tasks: RenewalTask[]; runbooks: Runbook[]; validations: ValidationCheck[]; auditEvents: AuditEvent[]; notifications: Notification[] }

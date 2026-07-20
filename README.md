@@ -6,7 +6,7 @@ Certificate lifecycle operations and deployment orchestration for MSPs and lean 
 
 Atlas has two intentionally separate modes in the same build:
 
-- `/demo` is a public sales workspace. `DemoDataProvider` loads fictional customers, environments, certificates, deployments, renewals, vendor blocks, validations, runbooks, notifications, and audit events. Mutations remain in browser memory and reset on refresh. It never initializes an operational Supabase repository.
+- `/demo` is a public sales workspace. `DemoDataProvider` loads fictional customers, environments, certificates, deployments, renewals, vendor blocks, validations, runbooks, notifications, and audit events. Mutations remain in browser memory and reset on refresh. A clearly separated panel asynchronously displays public certificate metadata from a small curated endpoint allowlist; it never initializes an operational Supabase repository.
 - `/app` is the authenticated production workspace. `SupabaseDataProvider` starts empty, resolves the signed-in user’s organization, and loads/persists only RLS-visible PostgreSQL rows. A fetch or authorization failure produces a real error and never falls back to fixtures.
 - `/login` and `/signup` use Supabase Auth. `/onboarding` atomically creates a first organization and Owner membership for an authenticated user with no membership.
 
@@ -23,6 +23,7 @@ Root traffic redirects to `/demo`, so a configured production deployment can sti
 - True multi-tenancy using `organization_id`, composite tenant foreign keys, role-aware RLS, and append-oriented audit history
 - Responsive premium dark interface with intentional loading, failure, and empty states
 - Authenticated, SSRF-conscious endpoint reachability function
+- Curated, read-only live TLS certificate metadata in the public demo, with cached and unavailable states that never block the simulated workspace
 
 ## Architecture
 
@@ -82,7 +83,13 @@ All operational tables carry `organization_id`. Composite foreign keys prevent c
 
 ## Production deployment
 
-Build with `pnpm build` and host `dist/` on a static provider configured to rewrite SPA routes to `index.html`. Supply only the URL and Publishable Key at build time. Apply migrations before enabling `/app`. Configure security headers, an exact `ALLOWED_ORIGIN` for Edge Functions, Supabase abuse controls, and rate limiting.
+Build with `pnpm build` and host `dist/` on a provider configured to rewrite SPA routes to `index.html`. The public demo's `/api/demo-certificates` handler requires a Node-compatible serverless runtime; static-only hosting can point `VITE_DEMO_INSPECTION_URL` at the separately deployed handler. Supply only public frontend variables at build time. Apply migrations before enabling `/app`. Configure security headers, an exact `ALLOWED_ORIGIN` for Edge Functions, Supabase abuse controls, and rate limiting.
+
+### Public demo certificate metadata
+
+`api/demo-certificates.ts` inspects only the repository-defined hostname allowlist and only on port 443. It resolves DNS server-side, rejects the request if any answer is private or reserved, and connects to a validated public IP while preserving TLS SNI/hostname verification. It never accepts arbitrary scan targets, follows no redirects, and returns public X.509 metadata only—never private keys or credentials. Connections time out after six seconds. Successful results are cached in warm serverless instances for ten minutes, responses are CDN-cacheable for five minutes, and a per-client warm-instance request limit reduces casual abuse.
+
+The demo renders its fictional operational data immediately and loads live metadata in the background. A successful response is also cached in browser storage, so a transient inspection failure can show the last successful result with an explicit **Cached** label. The in-memory server cache and rate limiter are defense-in-depth, not globally durable controls; production hosting should also apply platform-level quotas and rate limiting. Do not expand the allowlist without reviewing DNS and egress risk.
 
 ### Endpoint inspection
 
@@ -90,7 +97,7 @@ Deploy with `supabase functions deploy inspect-tls`. The function requires authe
 
 ## Testing
 
-Vitest covers expiration boundaries, permissions, renewal validation requirements, endpoint input, environment validation, provider selection, route isolation, anonymous demo access, and production no-fallback behavior. Before release, run the full command set above and execute multi-user RLS tests in a staging Supabase project.
+Vitest covers expiration boundaries, permissions, renewal validation requirements, endpoint input and public-address restrictions, environment validation, provider selection, route isolation, anonymous demo access, and production no-fallback behavior. Before release, run the full command set above and execute multi-user RLS tests in a staging Supabase project.
 
 ## Security and limitations
 

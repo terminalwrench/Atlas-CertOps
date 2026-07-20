@@ -1,13 +1,15 @@
-import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react'
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { demoData } from '../data/demo'
 import { canCompleteRenewal } from '../lib/domain'
 import { supabase } from '../lib/supabase'
 import { SupabaseDataRepository } from '../services/supabaseData'
-import type { AtlasData, Certificate, RenewalTask } from '../types'
+import { fetchDemoCertificates, readCachedDemoCertificates } from '../services/demoCertificateService'
+import type { AtlasData, Certificate, LiveCertificateMetadata, RenewalTask } from '../types'
 import { useAuth } from './AuthContext'
 
 export interface DataState extends AtlasData {
   mode: 'demo' | 'production'; loading: boolean; error: string | null; refresh(): Promise<void>
+  liveCertificates: LiveCertificateMetadata[]; liveCertificateStatus: 'unavailable' | 'cached' | 'refreshing' | 'live' | 'error'; liveCertificateError: string | null; liveCertificatesRefreshedAt: string | null; refreshLiveCertificates(force?: boolean): Promise<void>
   completeTask(taskId: string): Promise<void>; retryTask(taskId: string): Promise<void>; addCertificate(certificate: Certificate): Promise<void>
   updateCertificate(id: string, changes: Partial<Certificate>): Promise<void>; updateCustomer(id: string, input: { name: string; industry: string }): Promise<void>
   startRenewal(certificateId: string): Promise<void>
@@ -22,7 +24,10 @@ export const emptyData: AtlasData = { customers: [], environments: [], certifica
 
 export function DemoDataProvider({ children }: { children: ReactNode }) {
   const [data, setData] = useState<AtlasData>(() => structuredClone(demoData))
-  const value = useMemo<DataState>(() => ({ ...data, mode: 'demo', loading: false, error: null, async refresh() {},
+  const cached = useMemo(() => readCachedDemoCertificates(), []); const [liveCertificates, setLiveCertificates] = useState<LiveCertificateMetadata[]>(cached?.items ?? []); const [liveCertificateStatus, setLiveCertificateStatus] = useState<DataState['liveCertificateStatus']>(cached ? 'cached' : 'unavailable'); const [liveCertificateError, setLiveCertificateError] = useState<string | null>(null); const [liveCertificatesRefreshedAt, setLiveCertificatesRefreshedAt] = useState<string | null>(cached?.refreshedAt ?? null)
+  const refreshLiveCertificates = useCallback(async (force = false) => { setLiveCertificateStatus('refreshing'); setLiveCertificateError(null); try { const result = await fetchDemoCertificates(force); setLiveCertificates(result.items); setLiveCertificatesRefreshedAt(result.refreshedAt); setLiveCertificateStatus('live') } catch (cause) { setLiveCertificateError(cause instanceof Error ? cause.message : 'Live inspection is temporarily unavailable.'); setLiveCertificateStatus(liveCertificates.length ? 'cached' : 'error') } }, [liveCertificates.length])
+  const inspectionStarted = useRef(false); useEffect(() => { if (inspectionStarted.current) return; inspectionStarted.current = true; void refreshLiveCertificates(false) }, [refreshLiveCertificates])
+  const value = useMemo<DataState>(() => ({ ...data, mode: 'demo', loading: false, error: null, liveCertificates, liveCertificateStatus, liveCertificateError, liveCertificatesRefreshedAt, refreshLiveCertificates, async refresh() {},
     async completeTask(taskId) { setData((current) => { const tasks = current.tasks.map((task): RenewalTask => task.id === taskId ? { ...task, status: 'Completed', completedAt: new Date().toISOString(), validationResult: task.type === 'Validation' ? 'Passed' : task.validationResult } : task); const changed = tasks.find((task) => task.id === taskId); const workflows = current.workflows.map((workflow) => workflow.id === changed?.workflowId && canCompleteRenewal(tasks.filter((task) => task.workflowId === workflow.id)) ? { ...workflow, status: 'Completed' as const } : workflow); return { ...current, tasks, workflows, auditEvents: changed ? [{ id: crypto.randomUUID(), action: 'task.completed', entityType: 'renewal_task', entityId: changed.id, actor: 'Alex Morgan', timestamp: new Date().toISOString(), metadata: `${changed.title} marked complete in demo mode.` }, ...current.auditEvents] : current.auditEvents } }) },
     async retryTask(taskId) { setData((current) => ({ ...current, tasks: current.tasks.map((task) => task.id === taskId ? { ...task, status: 'In Progress', validationResult: undefined } : task) })) },
     async startRenewal() {},
@@ -35,7 +40,7 @@ export function DemoDataProvider({ children }: { children: ReactNode }) {
     async addRunbook(input) { const id = crypto.randomUUID(); setData((current) => ({ ...current, runbooks: [{ id, ...input }, ...current.runbooks], deployments: current.deployments.map((deployment) => deployment.id === input.deploymentId ? { ...deployment, runbookId: id } : deployment) })) },
     async deleteRecord(table, id) { if (table === 'customers') setData((current) => ({ ...current, customers: current.customers.filter((item) => item.id !== id) })); if (table === 'certificates') setData((current) => ({ ...current, certificates: current.certificates.filter((item) => item.id !== id) })) },
     async markNotificationsRead() { setData((current) => ({ ...current, notifications: current.notifications.map((note) => ({ ...note, read: true })) })) },
-  }), [data])
+  }), [data, liveCertificates, liveCertificateStatus, liveCertificateError, liveCertificatesRefreshedAt, refreshLiveCertificates])
   return <DataContext.Provider value={value}>{children}</DataContext.Provider>
 }
 
@@ -45,7 +50,7 @@ export function SupabaseDataProvider({ children }: { children: ReactNode }) {
   const refresh = useCallback(async () => { if (!repository) { setData(emptyData); setLoading(false); return } setLoading(true); setError(null); try { setData(await repository.load()) } catch (cause) { setData(emptyData); setError(cause instanceof Error ? cause.message : 'Unable to load production workspace.') } finally { setLoading(false) } }, [repository])
   useEffect(() => { void refresh() }, [refresh])
   const mutate = useCallback(async (operation: (repo: SupabaseDataRepository) => Promise<void>) => { if (!repository) throw new Error('Production data provider is unavailable.'); setError(null); try { await operation(repository); await refresh() } catch (cause) { const message = cause instanceof Error ? cause.message : 'Production operation failed.'; setError(message); throw new Error(message) } }, [repository, refresh])
-  const value = useMemo<DataState>(() => ({ ...data, mode: 'production', loading, error, refresh,
+  const value = useMemo<DataState>(() => ({ ...data, mode: 'production', loading, error, refresh, liveCertificates: [], liveCertificateStatus: 'unavailable', liveCertificateError: null, liveCertificatesRefreshedAt: null, async refreshLiveCertificates() {},
     completeTask: (id) => mutate((repo) => repo.completeTask(id)), retryTask: (id) => mutate((repo) => repo.retryTask(id)), startRenewal: (id) => mutate((repo) => repo.startRenewal(id)), addCertificate: (certificate) => mutate((repo) => repo.createCertificate(certificate)), updateCertificate: (id, changes) => mutate((repo) => repo.updateCertificate(id, changes)), addCustomer: (input) => mutate((repo) => repo.createCustomer(input)), updateCustomer: (id, input) => mutate((repo) => repo.updateCustomer(id, input)), addEnvironment: (input) => mutate((repo) => repo.createEnvironment(input)), addDeployment: (input) => mutate((repo) => repo.createDeployment(input)), addRunbook: (input) => mutate((repo) => repo.createRunbook(input)), deleteRecord: (table, id) => mutate((repo) => repo.deleteRecord(table, id)), markNotificationsRead: () => mutate((repo) => repo.markNotificationsRead()),
   }), [data, loading, error, refresh, mutate])
   return <DataContext.Provider value={value}>{children}</DataContext.Provider>
