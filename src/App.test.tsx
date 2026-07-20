@@ -3,6 +3,7 @@ import { MemoryRouter } from 'react-router-dom'
 import { describe, expect, it } from 'vitest'
 import App from './App'
 import { AuthProvider } from './context/AuthContext'
+import { demoData } from './data/demo'
 
 const renderRoute = (route: string) => render(<MemoryRouter initialEntries={[route]}><AuthProvider><App /></AuthProvider></MemoryRouter>)
 
@@ -19,6 +20,22 @@ describe('route isolation', () => {
     expect(screen.getByText('Certificates monitored')).toBeInTheDocument()
     expect(screen.queryByRole('button', { name: 'Account menu' })).not.toBeInTheDocument()
   })
+  it.each(demoData.certificates.map((certificate) => [certificate.id, certificate.commonName]))(
+    'renders demo certificate detail %s',
+    async (id, commonName) => {
+      renderRoute(`/demo/certificates/${id}`)
+      expect(await screen.findByRole('heading', { name: commonName })).toBeInTheDocument()
+      expect(screen.queryByText('Certificate not found')).not.toBeInTheDocument()
+    },
+  )
+  it.each(demoData.customers.map((customer) => [customer.id, customer.name]))(
+    'renders demo customer detail %s',
+    async (id, customerName) => {
+      renderRoute(`/demo/customers/${id}`)
+      expect(await screen.findByRole('heading', { name: customerName })).toBeInTheDocument()
+      expect(screen.queryByText('Customer not found')).not.toBeInTheDocument()
+    },
+  )
   it('does not load demo fixtures for an unavailable production provider', async () => {
     renderRoute('/app')
     expect(await screen.findByText('Sign in to Atlas')).toBeInTheDocument()
