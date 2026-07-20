@@ -48,7 +48,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     user: session?.user ?? null, session, loading, membershipLoading, membership, membershipError, configurationError: supabaseConfigurationError,
     async signIn(email, password) { if (!supabase) throw new Error(supabaseConfigurationError ?? 'Supabase is unavailable.'); const { error } = await supabase.auth.signInWithPassword({ email, password }); if (error) throw error },
     async signUp(email, password, fullName) { if (!supabase) throw new Error(supabaseConfigurationError ?? 'Supabase is unavailable.'); const { data, error } = await supabase.auth.signUp({ email, password, options: { data: { full_name: fullName }, emailRedirectTo: `${window.location.origin}/app` } }); if (error) throw error; return { confirmationRequired: !data.session } },
-    async signOut() { if (!supabase) return; const { error } = await supabase.auth.signOut(); if (error) throw error },
+    async signOut() { if (!supabase) return; const { error } = await supabase.auth.signOut(); if (error) throw error; setSession(null); setMembership(null); setMembershipError(null) },
     async bootstrapOrganization(name) { if (!supabase) throw new Error('Supabase is unavailable.'); const { error } = await supabase.rpc('bootstrap_organization', { organization_name: name }); if (error) throw error; await refreshMembership() },
     refreshMembership,
   }), [session, loading, membershipLoading, membership, membershipError, refreshMembership])

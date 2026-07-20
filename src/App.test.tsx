@@ -12,6 +12,7 @@ describe('route isolation', () => {
     expect(await screen.findByText('DEMO WORKSPACE')).toBeInTheDocument()
     expect(screen.getByText('Acme Managed Services')).toBeInTheDocument()
     expect(screen.getByText('Certificates monitored')).toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: 'Account menu' })).not.toBeInTheDocument()
   })
   it('does not load demo fixtures for an unavailable production provider', async () => {
     renderRoute('/app')
