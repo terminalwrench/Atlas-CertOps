@@ -28,6 +28,13 @@ describe('route isolation', () => {
       expect(screen.queryByText('Certificate not found')).not.toBeInTheDocument()
     },
   )
+  it('shows the failed renewal and validation story for demo certificate cert-4', async () => {
+    renderRoute('/demo/certificates/cert-4')
+    expect(await screen.findByRole('heading', { name: 'citrix-stg.northstar-health.example' })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'Renewal workflow' })).toBeInTheDocument()
+    expect(screen.getByText('Validate Citrix endpoint')).toBeInTheDocument()
+    expect(screen.getByText(/Endpoint still presents expired serial 77:31:A2:00:BA/)).toBeInTheDocument()
+  })
   it.each(demoData.customers.map((customer) => [customer.id, customer.name]))(
     'renders demo customer detail %s',
     async (id, customerName) => {
