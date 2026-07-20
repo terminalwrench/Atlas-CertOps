@@ -1,6 +1,7 @@
 import { createContext, useContext, useMemo, useState, type ReactNode } from 'react'
 import { demoData } from '../data/demo'
 import { canCompleteRenewal } from '../lib/domain'
+import { isSupabaseConfigured } from '../lib/supabase'
 import type { AtlasData, Certificate, RenewalTask } from '../types'
 
 interface DataState extends AtlasData {
@@ -10,9 +11,10 @@ interface DataState extends AtlasData {
   markNotificationsRead(): void
 }
 const DataContext = createContext<DataState | null>(null)
+const emptyData: AtlasData = { customers: [], certificates: [], deployments: [], workflows: [], tasks: [], runbooks: [], validations: [], auditEvents: [], notifications: [] }
 
 export function DataProvider({ children }: { children: ReactNode }) {
-  const [data, setData] = useState<AtlasData>(demoData)
+  const [data, setData] = useState<AtlasData>(isSupabaseConfigured ? emptyData : demoData)
   const value = useMemo<DataState>(() => ({
     ...data,
     completeTask(taskId) {
