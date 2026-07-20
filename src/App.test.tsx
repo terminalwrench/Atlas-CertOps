@@ -7,6 +7,11 @@ import { AuthProvider } from './context/AuthContext'
 const renderRoute = (route: string) => render(<MemoryRouter initialEntries={[route]}><AuthProvider><App /></AuthProvider></MemoryRouter>)
 
 describe('route isolation', () => {
+  it('renders a public product landing page at the root route', async () => {
+    renderRoute('/')
+    expect(await screen.findByRole('heading', { name: 'Certificate lifecycle operations without enterprise PKI overhead.' })).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: /Explore the live demo/ })).toHaveAttribute('href', '/demo')
+  })
   it('renders the anonymous demo with fictional fixtures', async () => {
     renderRoute('/demo')
     expect(await screen.findByText('DEMO WORKSPACE')).toBeInTheDocument()

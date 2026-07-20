@@ -10,7 +10,7 @@ Atlas has two intentionally separate modes in the same build:
 - `/app` is the authenticated production workspace. `SupabaseDataProvider` starts empty, resolves the signed-in user’s organization, and loads/persists only RLS-visible PostgreSQL rows. A fetch or authorization failure produces a real error and never falls back to fixtures.
 - `/login` and `/signup` use Supabase Auth. `/onboarding` atomically creates a first organization and Owner membership for an authenticated user with no membership.
 
-Root traffic redirects to `/demo`, so a configured production deployment can still be used for prospect demonstrations without exposing customer data.
+Root traffic renders a concise public product and private-beta landing page. `/demo` remains anonymous and isolated; `/app` remains authenticated and tenant-scoped.
 
 ## Product capabilities
 
@@ -24,6 +24,7 @@ Root traffic redirects to `/demo`, so a configured production deployment can sti
 - Responsive premium dark interface with intentional loading, failure, and empty states
 - Authenticated, SSRF-conscious endpoint reachability function
 - Curated, read-only live TLS certificate metadata in the public demo, with cached and unavailable states that never block the simulated workspace
+- Public landing, beta plan preview, trust/legal placeholders, configurable support links, CSV inventory/audit exports, and a lightweight first-workspace checklist
 
 ## Architecture
 
@@ -66,6 +67,9 @@ pnpm build
    ```env
    VITE_SUPABASE_URL=https://YOUR_PROJECT.supabase.co
    VITE_SUPABASE_PUBLISHABLE_KEY=sb_publishable_YOUR_KEY
+   VITE_PUBLIC_APP_URL=https://YOUR_APP_HOST
+   VITE_SUPPORT_EMAIL=support@YOUR_DOMAIN
+   VITE_DOCUMENTATION_URL=https://YOUR_DOCS_HOST
    ```
 
 Only the Publishable Key belongs in frontend configuration. Never use a Supabase Secret Key, `service_role` key, or database password in Vite environment variables. `VITE_SUPABASE_ANON_KEY` is accepted temporarily as a compatibility fallback, but the Publishable Key is preferred.
@@ -83,7 +87,19 @@ All operational tables carry `organization_id`. Composite foreign keys prevent c
 
 ## Production deployment
 
-Build with `pnpm build` and host `dist/` on a provider configured to rewrite SPA routes to `index.html`. The public demo's `/api/demo-certificates` handler requires a Node-compatible serverless runtime; static-only hosting can point `VITE_DEMO_INSPECTION_URL` at the separately deployed handler. Supply only public frontend variables at build time. Apply migrations before enabling `/app`. Configure security headers, an exact `ALLOWED_ORIGIN` for Edge Functions, Supabase abuse controls, and rate limiting.
+Build with `pnpm build` and host `dist/` on a provider configured to rewrite SPA routes to `index.html`. `vercel.json` includes SPA rewrites, security headers, and preserves the Node-compatible `/api/demo-certificates` serverless handler. Static-only hosting can point `VITE_DEMO_INSPECTION_URL` at a separately deployed handler. Supply only public frontend variables at build time. Apply migrations before enabling `/app`. Configure Supabase Auth URLs, an exact `ALLOWED_ORIGIN` for Edge Functions, Supabase abuse controls, and host-level rate limiting.
+
+Environment variables:
+
+| Variable | Required | Purpose |
+| --- | --- | --- |
+| `VITE_SUPABASE_URL` | For `/app` | Supabase project URL |
+| `VITE_SUPABASE_PUBLISHABLE_KEY` | For `/app` | Browser-safe Supabase Publishable Key |
+| `VITE_PUBLIC_APP_URL` | Public beta | Canonical public application URL |
+| `VITE_SUPPORT_EMAIL` | Public beta | Support and feedback destination |
+| `VITE_DOCUMENTATION_URL` | Recommended | Documentation link; defaults to `/security` |
+| `VITE_DEMO_INSPECTION_URL` | Static-only hosts | Separately hosted demo inspection endpoint; defaults to `/api/demo-certificates` |
+| `ALLOWED_ORIGIN` | Production Edge Function | Exact browser origin permitted to call production inspection request boundary |
 
 ### Public demo certificate metadata
 
@@ -93,12 +109,12 @@ The demo renders its fictional operational data immediately and loads live metad
 
 ### Endpoint inspection
 
-Deploy with `supabase functions deploy inspect-tls`. The function requires authentication, accepts only a hostname and port, rejects obvious local/private targets, follows no redirects, and times out. Supabase Edge Functions do not expose peer X.509 metadata, so V1 reports bounded reachability. Full certificate extraction needs a hardened egress-controlled worker with post-DNS private-range checks and request quotas.
+Deploy with `supabase functions deploy inspect-tls`. The function is a production request boundary: it verifies the Supabase user, Operator-or-higher tenant membership, organization/customer/environment ownership, hostname/port input, and explicit authorization acknowledgement. It appends an audit event and returns `501` without making a network connection. This is intentional: Supabase Edge Functions cannot safely expose and pin peer X.509 connections after DNS validation. Full customer endpoint extraction requires a hardened Node worker with public-address verification, DNS pinning, centralized tenant quotas, and a private-network collector design for non-public endpoints.
 
 ## Testing
 
-Vitest covers expiration boundaries, permissions, renewal validation requirements, endpoint input and public-address restrictions, environment validation, provider selection, route isolation, anonymous demo access, and production no-fallback behavior. Before release, run the full command set above and execute multi-user RLS tests in a staging Supabase project.
+Vitest covers expiration boundaries, permissions, renewal validation requirements, CSV exports, endpoint input and public-address restrictions, environment validation, provider selection, the public landing route, anonymous demo access, account sign-out, and production no-fallback behavior. Before release, run the full command set above and execute multi-user RLS tests in a staging Supabase project.
 
 ## Security and limitations
 
-See [docs/SECURITY.md](docs/SECURITY.md). External CA/cloud/appliance, email, Slack/Teams, billing, SSO, and private-network collectors remain intentionally out of scope and require external systems or credentials. A live Supabase project is required to execute end-to-end persistence and RLS integration tests; the application code and migrations are prepared without embedding privileged access.
+See [docs/SECURITY.md](docs/SECURITY.md). Privacy and Terms routes are explicitly draft placeholders and require professional legal review before broad commercial launch. External CA/cloud/appliance, email, Slack/Teams, billing, SSO, and private-network collectors remain intentionally out of scope and require external systems or credentials. A live Supabase project is required to execute end-to-end persistence and RLS integration tests; the application code and migrations are prepared without embedding privileged access.

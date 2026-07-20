@@ -9,3 +9,4 @@ dist
 .vite
 .pnpm-store
 coverage
+supabase/.temp/

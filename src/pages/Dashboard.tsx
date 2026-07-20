@@ -4,6 +4,7 @@ import { PageHeader } from '../components/PageHeader'
 import { StatusBadge } from '../components/StatusBadge'
 import { useData } from '../context/DataContext'
 import { certificateStatus, daysUntil, formatDate, progressForTasks } from '../lib/domain'
+import { certificateInventoryCsv, downloadCsv } from '../lib/export'
 import { useAppPath } from '../lib/routes'
 
 export function Dashboard() {
@@ -14,7 +15,8 @@ export function Dashboard() {
   const vendorBlocked = data.tasks.filter((task) => task.type === 'Vendor Handoff' && task.status === 'Blocked')
   const needsAttention = data.certificates.filter((cert) => ['Critical', 'Expired', 'Validation Failed'].includes(certificateStatus(cert))).sort((a, b) => daysUntil(a.expiresAt) - daysUntil(b.expiresAt))
   return <>
-    <PageHeader eyebrow="Operations overview" title="Good morning, Alex." description="Here’s what can expire or break next across your managed estate." actions={<><button className="button secondary">Export report</button><Link className="button primary" to={path('/certificates')}>Add certificate</Link></>} />
+    <PageHeader eyebrow="Operations overview" title={data.mode === 'demo' ? 'Good morning, Alex.' : 'Operations overview'} description="Here’s what can expire or break next across your managed estate." actions={<><button className="button secondary" onClick={() => downloadCsv('atlas-certificate-inventory.csv', certificateInventoryCsv(data.certificates, data.customers, data.deployments))}>Export inventory</button><Link className="button primary" to={path('/certificates')}>Add certificate</Link></>} />
+    {data.mode === 'production' && data.customers.length === 0 && <section className="onboarding-checklist"><div><span className="source-label">FIRST WORKSPACE SETUP</span><h2>Build your certificate operations map</h2><p>Start with a customer, then connect certificate metadata to its environments and deployment targets.</p></div><ol><li><Link to={path('/customers')}>1. Create your first customer <ArrowRight size={14} /></Link></li><li><span>2. Add an environment</span></li><li><span>3. Add certificate metadata</span></li><li><span>4. Map deployment targets</span></li><li><span>5. Start the first renewal</span></li></ol></section>}
     {data.mode === 'demo' && <LiveCertificatePanel />}
     <section className="metric-grid">
       <Metric tag={data.mode === 'demo' ? 'DEMO' : 'LIVE'} icon={<KeyRound />} label="Certificates monitored" value={data.certificates.length} sub="Across 3 customers" />

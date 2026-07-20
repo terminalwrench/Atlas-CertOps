@@ -8,7 +8,7 @@ Atlas CertOps is an operational metadata system, not a CA or secret store. The s
 - RLS is the authoritative tenant boundary. Every tenant table carries `organization_id`; policies resolve membership from `auth.uid()`.
 - UI permissions improve usability but do not replace RLS.
 - Audit events are append-oriented. Operators may insert them but no client policy permits update or delete.
-- Production endpoint inspection requires authentication, validates hostname/port, rejects obvious local/private address forms, uses a timeout, and follows no redirects. The Supabase Edge Function performs bounded reachability checks only.
+- Production endpoint inspection requests require a verified Supabase identity, Operator-or-higher organization membership, organization-owned customer and environment IDs, and explicit authorization acknowledgement. The Edge Function records the request as an audit event and deliberately makes no network connection. A hardened Node worker with DNS resolution, private/reserved-range rejection, address pinning, and centralized quotas is required before enabling customer endpoint inspection.
 - Public demo certificate inspection is a separate Node handler with a compile-time hostname allowlist and fixed port 443. It resolves every DNS answer, rejects the target if any address is private/reserved, pins the connection to the validated address, and retains the hostname for TLS SNI and certificate verification. It returns public peer-certificate metadata only. The handler cannot read production workspace data and is never called by `SupabaseDataProvider`.
 
 ## Assumptions and residual risks
