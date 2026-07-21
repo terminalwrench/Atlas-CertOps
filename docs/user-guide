@@ -1,0 +1,449 @@
+# Atlas CertOps User Guide
+
+Version 1.0
+
+---
+
+# Purpose
+
+This guide explains how end users interact with Atlas CertOps to create, manage, review, renew, and report on certification records.
+
+This guide applies to:
+
+- Standard Users
+- Supervisors
+- Compliance Managers
+- Administrators (daily operational tasks)
+
+---
+
+# Table of Contents
+
+1. Dashboard
+2. Navigation
+3. Searching
+4. Certificate Records
+5. Uploading Documents
+6. Renewals
+7. Approvals
+8. Notifications
+9. Reporting
+10. Activity History
+11. Profile Management
+12. FAQ
+
+---
+
+# Dashboard
+
+The dashboard provides an operational overview of your organization's compliance status.
+
+Widgets include:
+
+- Expiring Soon
+- Expired
+- Assigned to Me
+- Pending Approval
+- Recent Activity
+- Compliance Score
+- Notifications
+
+Selecting any widget opens the associated filtered record list.
+
+---
+
+# Navigation
+
+Primary navigation consists of:
+
+Dashboard
+
+Certificates
+
+Tasks
+
+Reports
+
+Notifications
+
+Administration (role dependent)
+
+Help
+
+Your current location is displayed using breadcrumb navigation.
+
+---
+
+# Searching
+
+Atlas CertOps supports global search.
+
+Searchable fields include:
+
+Certificate Name
+
+Certificate ID
+
+Owner
+
+Department
+
+Vendor
+
+Certification Type
+
+Asset
+
+Equipment
+
+Notes
+
+Tags
+
+Partial matches are supported.
+
+Filters may be combined.
+
+Example:
+
+Owner = Engineering
+
+Status = Expiring
+
+Department = Operations
+
+---
+
+# Creating a Certificate
+
+Navigate:
+
+Certificates → New Certificate
+
+Complete all required fields.
+
+Required fields include:
+
+Certificate Name
+
+Certificate Type
+
+Owner
+
+Issue Date
+
+Expiration Date
+
+Approver
+
+Department
+
+Optional fields include:
+
+Serial Number
+
+Vendor
+
+Reference Number
+
+Cost Center
+
+Comments
+
+Supporting Documents
+
+Select Save.
+
+The certificate immediately becomes part of the compliance inventory.
+
+---
+
+# Editing Certificates
+
+Open the certificate.
+
+Select Edit.
+
+Modify desired fields.
+
+Select Save.
+
+All changes are recorded in the Audit Log.
+
+---
+
+# Deleting Certificates
+
+Deletion permissions are limited to Administrators.
+
+Deleted records are soft deleted.
+
+Retention policies determine final removal.
+
+Deletion events are permanently logged.
+
+---
+
+# Uploading Supporting Documents
+
+Documents may include:
+
+PDF
+
+Images
+
+Word Documents
+
+Spreadsheets
+
+Certificates
+
+Licenses
+
+Training Records
+
+Maximum file size is configurable by your organization.
+
+Uploaded files are encrypted during transmission and storage.
+
+---
+
+# Renewing Certificates
+
+Open the certificate.
+
+Select Renew.
+
+Update:
+
+Issue Date
+
+Expiration Date
+
+Renewal Documentation
+
+Comments
+
+Submit.
+
+Depending on organizational policy:
+
+Renewal may require approval.
+
+---
+
+# Approval Workflow
+
+Some organizations require approvals before certificates become active.
+
+Typical workflow:
+
+Employee
+
+↓
+
+Supervisor
+
+↓
+
+Compliance Manager
+
+↓
+
+Approved
+
+Pending approvals appear under:
+
+Tasks
+
+Approvals
+
+Notifications
+
+---
+
+# Notifications
+
+Users may receive:
+
+Assignment Notifications
+
+Approval Requests
+
+Renewal Reminders
+
+Expiration Warnings
+
+Weekly Digests
+
+Notification delivery methods:
+
+Email
+
+In-App
+
+SMS (optional)
+
+---
+
+# Reports
+
+Users may generate reports including:
+
+Expiring Certificates
+
+Expired Certificates
+
+Department Status
+
+Owner Summary
+
+Compliance Overview
+
+Audit History
+
+Reports may be exported as:
+
+PDF
+
+CSV
+
+Excel
+
+---
+
+# Activity History
+
+Every certificate includes an immutable history.
+
+Recorded events include:
+
+Creation
+
+Modification
+
+Renewal
+
+Approval
+
+Assignment
+
+Deletion
+
+Document Upload
+
+Comments
+
+Each event records:
+
+Timestamp
+
+User
+
+Action
+
+Previous Value
+
+New Value
+
+---
+
+# Profile Management
+
+Navigate:
+
+Settings → My Profile
+
+Users may update:
+
+Display Name
+
+Password
+
+Time Zone
+
+Language
+
+Notification Preferences
+
+Theme
+
+---
+
+# Keyboard Shortcuts
+
+Ctrl + K
+
+Global Search
+
+Ctrl + N
+
+New Certificate
+
+Esc
+
+Close Dialog
+
+Ctrl + S
+
+Save
+
+---
+
+# Best Practices
+
+Review expiring certificates weekly.
+
+Upload supporting documentation immediately.
+
+Use descriptive certificate names.
+
+Assign clear ownership.
+
+Avoid duplicate records.
+
+Respond promptly to approval requests.
+
+---
+
+# Accessibility
+
+Atlas CertOps supports:
+
+Keyboard navigation
+
+Screen readers
+
+High contrast mode
+
+Responsive layouts
+
+WCAG accessibility principles.
+
+---
+
+# Frequently Asked Questions
+
+How do I renew a certificate?
+
+Open the record and select Renew.
+
+Who can delete certificates?
+
+Administrators only.
+
+Can I recover deleted records?
+
+If your retention policy permits.
+
+Can I export reports?
+
+Yes.
+
+Can I upload multiple documents?
+
+Yes.
+
+Can I edit historical records?
+
+Only with appropriate permissions.
