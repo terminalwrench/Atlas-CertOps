@@ -1,0 +1,389 @@
+# Atlas CertOps Administrator Guide
+
+Version 1.0
+
+---
+
+# Purpose
+
+Administrators configure and maintain Atlas CertOps for their organization.
+
+Responsibilities include:
+
+User Management
+
+Authentication
+
+Security
+
+Compliance Configuration
+
+Notifications
+
+Integrations
+
+System Health
+
+---
+
+# Administrator Responsibilities
+
+Maintain user accounts
+
+Assign permissions
+
+Configure workflows
+
+Review audit logs
+
+Monitor system health
+
+Manage integrations
+
+Enforce organizational security policies
+
+---
+
+# User Management
+
+Navigate:
+
+Administration → Users
+
+Administrators can:
+
+Create users
+
+Disable users
+
+Reset passwords
+
+Unlock accounts
+
+Assign departments
+
+Assign roles
+
+Deactivate accounts
+
+---
+
+# Roles
+
+Typical roles include:
+
+Administrator
+
+Compliance Manager
+
+Supervisor
+
+Operator
+
+Auditor
+
+Read Only
+
+Organizations may create custom roles.
+
+---
+
+# Permissions
+
+Permissions are assigned using RBAC.
+
+Examples:
+
+View Certificates
+
+Create Certificates
+
+Edit Certificates
+
+Delete Certificates
+
+Approve Renewals
+
+Export Reports
+
+Manage Users
+
+Configure Integrations
+
+Manage Settings
+
+---
+
+# Organization Settings
+
+Administrators configure:
+
+Organization Name
+
+Branding
+
+Logo
+
+Time Zone
+
+Language
+
+Business Hours
+
+Retention Policies
+
+Password Policy
+
+Notification Defaults
+
+---
+
+# Authentication
+
+Supported methods:
+
+Local Authentication
+
+Microsoft Entra ID
+
+Okta
+
+Ping Identity
+
+Google Workspace
+
+LDAP
+
+SAML
+
+OIDC
+
+MFA is strongly recommended.
+
+---
+
+# Password Policy
+
+Minimum Length
+
+Complexity
+
+Expiration
+
+Reuse Prevention
+
+Account Lockout
+
+Session Timeout
+
+---
+
+# Audit Logging
+
+Audit logs record:
+
+Authentication
+
+Configuration Changes
+
+Certificate Updates
+
+Role Changes
+
+Approvals
+
+Imports
+
+Exports
+
+Administrative Actions
+
+Logs cannot be modified by users.
+
+---
+
+# Workflow Configuration
+
+Administrators define:
+
+Approval Chains
+
+Escalation Rules
+
+Renewal Timing
+
+Notification Recipients
+
+Conditional Approvals
+
+Automatic Assignment
+
+---
+
+# Notification Management
+
+Configure:
+
+SMTP
+
+Email Templates
+
+Reminder Schedule
+
+Digest Frequency
+
+Escalation Emails
+
+Delivery Retry Policies
+
+---
+
+# Import Configuration
+
+Supported:
+
+CSV
+
+Excel
+
+API
+
+Bulk validation occurs before import.
+
+Duplicate detection prevents accidental record duplication.
+
+---
+
+# Export Configuration
+
+Exports support:
+
+CSV
+
+Excel
+
+PDF
+
+JSON
+
+Exports may be restricted by permission.
+
+---
+
+# Security Settings
+
+TLS Configuration
+
+Session Duration
+
+Idle Timeout
+
+IP Restrictions
+
+API Tokens
+
+MFA Enforcement
+
+Password Policy
+
+Device Trust
+
+---
+
+# Backup Policy
+
+Database backups
+
+Uploaded documents
+
+Configuration
+
+Encryption keys
+
+Retention schedules
+
+Recovery testing
+
+---
+
+# Monitoring
+
+Administrators should review:
+
+Failed Logins
+
+Storage Usage
+
+Certificate Growth
+
+Integration Failures
+
+Notification Queue
+
+API Errors
+
+Background Jobs
+
+---
+
+# Maintenance
+
+Weekly:
+
+Review failed jobs
+
+Monthly:
+
+Verify backups
+
+Quarterly:
+
+Review permissions
+
+Annually:
+
+Disaster recovery exercise
+
+Security audit
+
+---
+
+# Troubleshooting
+
+Common issues:
+
+Notification failures
+
+Expired integrations
+
+Import validation errors
+
+Permission conflicts
+
+Authentication failures
+
+API connectivity
+
+---
+
+# Administrator Best Practices
+
+Enable MFA.
+
+Review permissions quarterly.
+
+Monitor audit logs weekly.
+
+Test backups monthly.
+
+Never share administrator accounts.
+
+Use least-privilege access.
+
+Document configuration changes.
+
+Review inactive users regularly.
+
+Rotate API credentials.
+
+Review compliance reports weekly.
