@@ -1,0 +1,295 @@
+# Atlas CertOps
+## Standard Operating Procedures (SOP) Manual
+
+Version 1.0
+
+---
+
+# Purpose
+
+The Atlas CertOps SOP Manual establishes standardized operational procedures for all certificate lifecycle activities.
+
+These procedures ensure consistency, repeatability, accountability, and audit readiness across the organization.
+
+---
+
+# SOP-001
+## Create Certificate
+
+### Purpose
+
+Create a new certificate record.
+
+### Responsible Roles
+
+Operator
+
+Compliance Manager
+
+Administrator
+
+### Prerequisites
+
+• Appropriate permissions
+• Required certificate information available
+
+### Procedure
+
+1. Navigate to Certificates.
+2. Select New Certificate.
+3. Complete all required fields.
+4. Upload supporting documentation.
+5. Verify owner assignment.
+6. Verify expiration date.
+7. Save record.
+
+### Verification
+
+• Certificate appears in inventory.
+• Audit record created.
+• Notifications generated if applicable.
+
+---
+
+# SOP-002
+## Renew Certificate
+
+Purpose
+
+Replace an expiring certificate.
+
+Procedure
+
+1. Locate certificate.
+2. Select Renew.
+3. Upload replacement certificate.
+4. Update issue date.
+5. Update expiration date.
+6. Submit.
+
+Verification
+
+• Old revision retained.
+• New revision active.
+• Audit history preserved.
+
+---
+
+# SOP-003
+## Approve Certificate
+
+1. Open Pending Approvals.
+2. Review attached documentation.
+3. Validate information.
+4. Approve or Reject.
+5. Enter comments if required.
+
+---
+
+# SOP-004
+## Reject Certificate
+
+Reasons may include:
+
+Missing documentation
+
+Expired documentation
+
+Incorrect owner
+
+Invalid issuer
+
+Duplicate submission
+
+Rejected certificates return to submitter.
+
+---
+
+# SOP-005
+## Upload Supporting Documentation
+
+Supported:
+
+PDF
+
+DOCX
+
+Images
+
+Scanned certificates
+
+Training records
+
+Verification
+
+Document successfully attached.
+
+Virus scan completed.
+
+---
+
+# SOP-006
+## Assign Certificate Owner
+
+Only authorized users.
+
+Verify:
+
+Department
+
+Supervisor
+
+Contact information
+
+Assignment recorded in audit history.
+
+---
+
+# SOP-007
+## Import Certificates
+
+Source:
+
+CSV
+
+Excel
+
+Procedure
+
+Validate template
+
+Preview import
+
+Resolve errors
+
+Import
+
+Review summary
+
+---
+
+# SOP-008
+## Export Compliance Report
+
+Generate desired report.
+
+Verify filters.
+
+Export.
+
+Store according to organizational policy.
+
+---
+
+# SOP-009
+## Archive Certificate
+
+Certificates no longer active may be archived.
+
+Archive preserves:
+
+History
+
+Attachments
+
+Audit trail
+
+Archived records remain searchable.
+
+---
+
+# SOP-010
+## Delete Certificate
+
+Administrators only.
+
+Deletion requires confirmation.
+
+Soft delete performed.
+
+Audit entry recorded.
+
+---
+
+# SOP-011
+## Restore Certificate
+
+Locate archived record.
+
+Select Restore.
+
+Validate ownership.
+
+Confirm restoration.
+
+---
+
+# SOP-012
+## Weekly Compliance Review
+
+Review:
+
+Expiring
+
+Expired
+
+Missing documentation
+
+Pending approvals
+
+Failed renewals
+
+Create remediation tasks.
+
+---
+
+# SOP-013
+## Monthly Audit Review
+
+Review:
+
+Audit logs
+
+Deleted records
+
+Permission changes
+
+Imports
+
+Exports
+
+Administrative activity
+
+Document findings.
+
+---
+
+# SOP-014
+## Quarterly Permission Review
+
+Review every user.
+
+Remove unnecessary privileges.
+
+Disable inactive accounts.
+
+Verify RBAC.
+
+---
+
+# SOP-015
+## Annual Compliance Audit
+
+Generate:
+
+Compliance Summary
+
+Expired Report
+
+Department Summary
+
+Audit History
+
+Supporting Documentation
+
+Deliver package to auditors.
