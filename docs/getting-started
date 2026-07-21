@@ -1,0 +1,199 @@
+# Getting Started
+
+## Welcome
+
+This guide walks new organizations through their initial Atlas CertOps deployment.
+
+Most organizations complete initial setup in less than one hour.
+
+---
+
+# Step 1 — Accept Your Invitation
+
+Your organization administrator will provide an invitation link.
+
+Select **Accept Invitation**.
+
+Create your password or authenticate using your organization's Single Sign-On provider.
+
+---
+
+# Step 2 — Sign In
+
+Navigate to:
+
+https://app.certops.atlasandelse.com
+
+Enter your credentials.
+
+After successful authentication you will arrive at the Dashboard.
+
+---
+
+# Step 3 — Complete Your Profile
+
+Open:
+
+Settings → My Profile
+
+Review:
+
+- Name
+- Email
+- Time Zone
+- Notification Preferences
+
+Save your changes.
+
+---
+
+# Step 4 — Review Your Dashboard
+
+The dashboard displays:
+
+- Expiring Certificates
+- Recently Updated Records
+- Pending Approvals
+- Assigned Tasks
+- Compliance Health
+- Recent Activity
+
+---
+
+# Step 5 — Create Your First Certificate
+
+Navigate to:
+
+Certificates
+
+Select:
+
+New Certificate
+
+Complete all required fields.
+
+Typical fields include:
+
+- Certificate Name
+- Certificate Type
+- Owner
+- Issue Date
+- Expiration Date
+- Renewal Interval
+- Department
+- Notes
+
+Upload any supporting documentation.
+
+Select Save.
+
+---
+
+# Step 6 — Verify Notifications
+
+Navigate to:
+
+Settings → Notifications
+
+Confirm:
+
+Email Notifications
+
+Renewal Alerts
+
+Assignment Alerts
+
+Approval Requests
+
+Digest Frequency
+
+---
+
+# Step 7 — Invite Team Members
+
+Navigate to:
+
+Administration → Users
+
+Select:
+
+Invite User
+
+Assign an appropriate role.
+
+Examples include:
+
+Administrator
+
+Compliance Manager
+
+Supervisor
+
+Viewer
+
+Operator
+
+Users receive an email invitation immediately.
+
+---
+
+# Step 8 — Import Existing Data
+
+Navigate to:
+
+Administration → Imports
+
+Supported formats:
+
+CSV
+
+Excel (.xlsx)
+
+Follow the Import Wizard.
+
+Resolve any validation errors before finalizing the import.
+
+---
+
+# Step 9 — Configure Approval Workflows
+
+Navigate to:
+
+Administration → Workflows
+
+Create approval chains based on organizational requirements.
+
+Example:
+
+Employee
+↓
+
+Supervisor
+↓
+
+Compliance Officer
+↓
+
+Final Approval
+
+---
+
+# Step 10 — Begin Managing Compliance
+
+Your organization is now ready to manage certifications using Atlas CertOps.
+
+Continue with the User Guide for detailed workflows.
+
+---
+
+# Next Steps
+
+Recommended reading:
+
+User Guide
+
+Administrator Guide
+
+Operations Guide
+
+Security Guide
