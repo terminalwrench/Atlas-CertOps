@@ -1,0 +1,320 @@
+# Atlas CertOps
+## System Architecture Guide
+
+Version: 1.0
+
+Document Classification:
+Internal / Customer Administrator
+
+Owner:
+Atlas & Else
+
+---
+
+# 1. Purpose
+
+This document describes the logical and physical architecture of Atlas CertOps.
+
+It provides administrators, engineers, auditors, and implementation teams with an understanding of how the platform is structured and how major components interact.
+
+---
+
+# 2. Design Principles
+
+Atlas CertOps is designed around the following principles:
+
+• Cloud-first
+• API-first
+• Secure by default
+• Stateless application tier
+• Horizontal scalability
+• High availability
+• Least-privilege access
+• Comprehensive auditability
+• Vendor-neutral integrations
+• Modular service boundaries
+
+---
+
+# 3. High-Level Architecture
+
+Client Layer
+    │
+    ▼
+Web Application (React)
+    │
+HTTPS / TLS 1.3
+    │
+    ▼
+Application API
+    │
+    ├── Authentication
+    ├── Certificate Management
+    ├── Reporting
+    ├── Workflow Engine
+    ├── Notifications
+    ├── Audit Service
+    ├── Integration Service
+    │
+    ▼
+PostgreSQL Database
+    │
+    ▼
+Encrypted Object Storage
+
+---
+
+# 4. Client Layer
+
+Supported clients:
+
+• Chrome
+• Edge
+• Firefox
+• Safari
+
+Responsive design supports:
+
+Desktop
+
+Tablet
+
+Mobile
+
+No browser plugins are required.
+
+---
+
+# 5. Authentication Layer
+
+Supports:
+
+Microsoft Entra ID
+
+Google Workspace
+
+Okta
+
+Ping Identity
+
+LDAP
+
+SAML 2.0
+
+OIDC
+
+Local Accounts
+
+MFA
+
+Authentication is delegated whenever possible to the organization's identity provider.
+
+---
+
+# 6. Application Layer
+
+Primary services include:
+
+Certificate Service
+
+Workflow Engine
+
+Notification Engine
+
+Audit Service
+
+Reporting Service
+
+Administration Service
+
+REST API
+
+Health Monitoring
+
+Background Workers
+
+---
+
+# 7. Database Layer
+
+Primary datastore:
+
+PostgreSQL
+
+Data includes:
+
+Certificate records
+
+Audit events
+
+Users
+
+Roles
+
+Permissions
+
+Notifications
+
+Configuration
+
+Reporting metadata
+
+Attachments are stored separately.
+
+---
+
+# 8. Storage Layer
+
+Object storage contains:
+
+PDF certificates
+
+Scanned documentation
+
+Images
+
+Supporting documents
+
+Export packages
+
+Backups
+
+All objects are encrypted at rest.
+
+---
+
+# 9. Notification Layer
+
+Notification providers include:
+
+SMTP
+
+Microsoft 365
+
+Google Workspace
+
+Webhook integrations
+
+Future:
+
+Microsoft Teams
+
+Slack
+
+SMS providers
+
+---
+
+# 10. Reporting Layer
+
+Supports:
+
+Operational dashboards
+
+Compliance reporting
+
+Executive reporting
+
+CSV export
+
+Excel export
+
+PDF export
+
+Scheduled reports
+
+---
+
+# 11. Background Jobs
+
+Recurring jobs include:
+
+Expiration calculations
+
+Reminder generation
+
+Workflow processing
+
+Audit cleanup
+
+Search indexing
+
+Notification delivery
+
+Backup validation
+
+---
+
+# 12. Logging
+
+Application Logs
+
+Audit Logs
+
+Security Logs
+
+Infrastructure Logs
+
+API Logs
+
+Logs remain logically separated.
+
+---
+
+# 13. Security Model
+
+Every request validates:
+
+Authentication
+
+Authorization
+
+Tenant ownership
+
+Input validation
+
+Business rules
+
+Audit recording
+
+---
+
+# 14. Scalability
+
+Application servers are stateless.
+
+Scaling occurs horizontally.
+
+Additional instances require no configuration changes beyond load balancer registration.
+
+---
+
+# 15. High Availability
+
+Multiple application instances
+
+Managed database
+
+Automatic backups
+
+Load balancing
+
+Health monitoring
+
+Automatic restart
+
+---
+
+# 16. Design Goals
+
+99.9% availability minimum.
+
+Predictable performance.
+
+Simple administration.
+
+Comprehensive auditability.
+
+Low operational overhead.
+
+Enterprise-ready security.
