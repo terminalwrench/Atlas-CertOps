@@ -1,0 +1,642 @@
+# Atlas CertOps SaaS Operations Manual
+
+**Document ID:** ACO-OPS-012  
+**Version:** 1.0  
+**Owner:** Atlas & Else  
+**Classification:** Internal  
+**Review Cycle:** Annual and after material operational changes
+
+---
+
+## 1. Purpose
+
+This manual defines the routine procedures used to operate Atlas CertOps as a secure, reliable cloud service.
+
+It covers:
+
+- Daily service monitoring.
+- Customer and tenant administration.
+- Certificate lifecycle processing.
+- Scheduled jobs.
+- Backup verification.
+- Security review.
+- Change management.
+- Incident escalation.
+- Capacity management.
+- Operational reporting.
+
+---
+
+## 2. Operating Principles
+
+Atlas CertOps operations follow these principles:
+
+1. Protect customer data.
+2. Preserve tenant isolation.
+3. Maintain reliable audit history.
+4. Use least-privilege access.
+5. Automate repeatable work.
+6. Require review for high-impact changes.
+7. Verify every production change.
+8. Document incidents, exceptions, and recovery actions.
+9. Never use production customer data casually.
+10. Prefer controlled rollback over untested emergency repair.
+
+---
+
+## 3. Service Components
+
+Operations personnel must understand the health and dependency of:
+
+- Public application interface.
+- Application programming interface.
+- Authentication services.
+- Primary database.
+- Customer file storage.
+- Background-job processor.
+- Notification delivery service.
+- Audit logging.
+- Reporting engine.
+- Customer integrations.
+- Documentation site.
+- Status page.
+- Monitoring and alerting platform.
+
+A failure in a supporting service may affect only part of the platform and must be assessed accordingly.
+
+---
+
+## 4. Operational Roles
+
+### Service Owner
+
+Accountable for overall service availability, operational policy, and major-risk acceptance.
+
+### Operations Engineer
+
+Monitors service health, investigates alerts, performs approved maintenance, and executes recovery procedures.
+
+### Application Engineer
+
+Investigates defects, deploys application corrections, and validates product behavior.
+
+### Security Lead
+
+Reviews suspicious activity, manages security incidents, and approves security-sensitive changes.
+
+### Customer Support
+
+Receives customer reports, gathers evidence, communicates status, and escalates confirmed service issues.
+
+### Incident Commander
+
+Coordinates major incidents, assigns responsibilities, approves customer communications, and closes the incident.
+
+One person may hold more than one role in a small organization, but authorization and review requirements must still be documented.
+
+---
+
+## 5. Daily Operations Checklist
+
+Complete the following each business day:
+
+- Review active monitoring alerts.
+- Confirm public application availability.
+- Confirm API health.
+- Review failed authentication anomalies.
+- Review failed background jobs.
+- Review failed notification deliveries.
+- Confirm database backup completion.
+- Check database and storage utilization.
+- Review elevated error rates.
+- Review unresolved customer-impacting tickets.
+- Confirm no critical certificate-processing jobs are delayed.
+- Record significant findings.
+
+Automated monitoring may perform continuous checks, but an accountable person must review unresolved failures.
+
+---
+
+## 6. Weekly Operations Checklist
+
+Complete the following weekly:
+
+- Review expiring platform secrets and service credentials.
+- Review scheduled-job completion trends.
+- Review application error patterns.
+- Review unusual export volume.
+- Review administrator activity.
+- Review storage growth.
+- Review database performance.
+- Review notification bounce and failure rates.
+- Confirm status-page components match production architecture.
+- Review open incidents and corrective actions.
+- Review failed customer integrations.
+- Confirm documentation for recent production changes was updated.
+
+---
+
+## 7. Monthly Operations Checklist
+
+Complete the following monthly:
+
+- Review privileged user access.
+- Confirm inactive internal accounts are disabled.
+- Verify backup retention.
+- Review cloud and vendor service costs.
+- Review capacity thresholds.
+- Review dependency and vulnerability reports.
+- Review service availability metrics.
+- Review support response performance.
+- Verify customer offboarding actions were completed.
+- Confirm security patches were evaluated.
+- Review system-generated certificate reminders for accuracy.
+- Test a representative customer workflow.
+- Confirm audit-log ingestion and retention.
+
+---
+
+## 8. Quarterly Operations Checklist
+
+Complete the following quarterly:
+
+- Perform an access review.
+- Conduct a backup restoration test.
+- Review disaster-recovery readiness.
+- Review service dependencies and vendor risks.
+- Review customer-data retention settings.
+- Review monitoring thresholds.
+- Review incident trends.
+- Review capacity forecasts.
+- Review integration credentials and scopes.
+- Validate tenant-isolation controls.
+- Review operational policies for accuracy.
+- Confirm production runbooks match the live environment.
+
+---
+
+## 9. Annual Operations Checklist
+
+Complete the following annually:
+
+- Perform a full disaster-recovery exercise.
+- Review the Incident Response Plan.
+- Review the Business Continuity Plan.
+- Review the data-retention policy.
+- Review the security program.
+- Review all privileged access.
+- Review customer-facing service commitments.
+- Conduct or commission appropriate security testing.
+- Review infrastructure architecture.
+- Review vendor agreements and subprocessors.
+- Review end-of-life dependencies.
+- Approve updated operational documentation.
+
+---
+
+## 10. Service Health Monitoring
+
+### Availability
+
+Monitor:
+
+- Application reachability.
+- API response.
+- Authentication flow.
+- Database connectivity.
+- File-storage access.
+- Background processing.
+- Notification delivery.
+
+### Performance
+
+Monitor:
+
+- Request latency.
+- Error rate.
+- Database query duration.
+- Queue processing time.
+- Report-generation time.
+- File-upload and download failures.
+- Scheduled-job duration.
+
+### Capacity
+
+Monitor:
+
+- Database storage.
+- Object storage.
+- Application compute.
+- Connection usage.
+- Queue depth.
+- Log volume.
+- Active tenants.
+- Active users.
+- Certificate-record growth.
+
+---
+
+## 11. Alert Classification
+
+### Critical
+
+Examples:
+
+- Complete service outage.
+- Confirmed cross-tenant exposure.
+- Suspected data breach.
+- Database unavailable.
+- Authentication unavailable for all customers.
+- Backup recovery capability unavailable.
+
+Response:
+
+- Immediate investigation.
+- Open an incident.
+- Assign an incident commander.
+- Begin customer communication when appropriate.
+
+### High
+
+Examples:
+
+- Major feature unavailable.
+- Notification jobs broadly failing.
+- Significant performance degradation.
+- File storage inaccessible.
+- Elevated authorization failures.
+
+Response:
+
+- Prompt investigation.
+- Escalate if customer impact is confirmed.
+- Track until verified resolution.
+
+### Medium
+
+Examples:
+
+- Isolated integration failure.
+- Limited report failure.
+- Noncritical scheduled job delayed.
+- Capacity threshold approaching.
+
+Response:
+
+- Investigate during the operating period.
+- Create corrective work if not immediately resolved.
+
+### Low
+
+Examples:
+
+- Cosmetic defect.
+- Documentation issue.
+- Nonurgent optimization.
+- Informational threshold.
+
+Response:
+
+- Record and prioritize through normal work management.
+
+---
+
+## 12. Certificate Lifecycle Operations
+
+Atlas CertOps must reliably process:
+
+- New certificate creation.
+- Ownership assignment.
+- Document attachment.
+- Approval routing.
+- Rejection and resubmission.
+- Renewal.
+- Expiration calculation.
+- Reminder generation.
+- Status transition.
+- Archival.
+- Audit recording.
+
+Operations personnel should investigate when:
+
+- Expiration jobs do not complete.
+- Renewal reminders are duplicated or missing.
+- Workflow state becomes inconsistent.
+- Certificate attachments cannot be retrieved.
+- Customer dashboards disagree with source records.
+- Audit events are missing.
+- Scheduled reports fail.
+
+Corrections must preserve history rather than silently replacing or deleting evidence.
+
+---
+
+## 13. Background Jobs
+
+Background jobs may include:
+
+- Expiration-status recalculation.
+- Renewal-reminder generation.
+- Notification dispatch.
+- Scheduled report generation.
+- Integration synchronization.
+- Data-retention processing.
+- Search indexing.
+- Audit export.
+- Backup verification.
+
+For each job, operations documentation must identify:
+
+- Schedule.
+- Owner.
+- Expected duration.
+- Success condition.
+- Retry behavior.
+- Failure alert.
+- Safe manual rerun procedure.
+- Duplicate-processing protection.
+
+A failed job must not be rerun until the operator understands whether the previous attempt partially completed.
+
+---
+
+## 14. Customer Tenant Provisioning
+
+Before activating a new customer tenant:
+
+1. Confirm the authorized customer contact.
+2. Create the organization record.
+3. Assign the correct service plan.
+4. Configure tenant identifiers.
+5. Configure storage and retention defaults.
+6. Assign the initial tenant administrator.
+7. Enforce applicable authentication settings.
+8. Verify tenant isolation.
+9. Confirm email delivery.
+10. Test certificate creation and retrieval.
+11. Record the activation date.
+12. Provide onboarding materials.
+
+No customer should receive access to another customer's configuration or data.
+
+---
+
+## 15. Customer Offboarding
+
+Customer offboarding must follow the signed agreement and data-retention policy.
+
+Required steps:
+
+1. Confirm authorized termination request.
+2. Record effective termination date.
+3. Disable new billing where applicable.
+4. Provide permitted data export.
+5. Restrict or terminate user access.
+6. Revoke customer-specific integration credentials.
+7. Retain data for the applicable contractual period.
+8. Securely delete data when authorized and due.
+9. Record deletion evidence.
+10. Confirm completion with the authorized customer contact.
+
+Data must not be destroyed immediately when a legal hold, dispute, security investigation, or contractual retention period applies.
+
+---
+
+## 16. Privileged Access
+
+Production access must:
+
+- Be limited to authorized personnel.
+- Use individual accounts.
+- Require multifactor authentication.
+- Use least-privilege roles.
+- Be logged.
+- Be reviewed regularly.
+- Be removed promptly when no longer required.
+
+Shared administrator accounts are prohibited except for controlled emergency credentials protected through an approved secrets-management process.
+
+Emergency access must be reviewed after use.
+
+---
+
+## 17. Production Data Handling
+
+Operations personnel must not:
+
+- Copy production data into personal storage.
+- Use customer data for unrelated testing.
+- Place secrets in tickets or chat.
+- Send customer files through unapproved channels.
+- Disable tenant protections for convenience.
+- Modify audit history to hide an action.
+- Run destructive queries without review and recovery preparation.
+
+Where production data is needed for troubleshooting, access must be limited to the minimum necessary scope.
+
+---
+
+## 18. Change Management
+
+Every planned production change must include:
+
+- Description.
+- Business reason.
+- Risk assessment.
+- Test evidence.
+- Deployment procedure.
+- Validation procedure.
+- Rollback procedure.
+- Responsible engineer.
+- Approver.
+- Scheduled window.
+- Documentation impact.
+
+### Standard Change Flow
+
+1. Develop the change.
+2. Review code and configuration.
+3. Test in a non-production environment.
+4. Approve the change.
+5. Create or confirm a recovery point.
+6. Deploy.
+7. Validate.
+8. Monitor.
+9. Close the change record.
+10. Update documentation.
+
+---
+
+## 19. Emergency Changes
+
+Emergency changes are allowed only to:
+
+- Restore service.
+- Contain a security incident.
+- Prevent imminent data loss.
+- Correct severe customer impact.
+
+Emergency changes must:
+
+- Use the safest available procedure.
+- Be documented during or immediately after execution.
+- Include validation.
+- Receive retrospective review.
+- Generate follow-up work when the permanent correction differs from the emergency measure.
+
+---
+
+## 20. Deployment Validation
+
+After every production deployment, verify:
+
+- Application loads.
+- Authentication works.
+- API health checks pass.
+- Database migrations completed.
+- Tenant access remains isolated.
+- Certificate creation works.
+- Existing certificate retrieval works.
+- File upload and retrieval work.
+- Approval workflows process correctly.
+- Audit events are created.
+- Background workers are active.
+- Notification delivery is operational.
+- Error rates remain normal.
+
+A deployment is not complete until validation succeeds.
+
+---
+
+## 21. Rollback
+
+Rollback must be considered when:
+
+- Critical validation fails.
+- Error rates materially increase.
+- Customer data integrity is uncertain.
+- Authentication becomes unreliable.
+- Tenant isolation cannot be confirmed.
+- Background jobs process incorrectly.
+
+Rollback steps must be prepared before deployment.
+
+Database migrations require special review because some schema changes cannot safely be reversed without restoring data.
+
+---
+
+## 22. Customer Support Escalation
+
+Customer Support should collect:
+
+- Customer organization.
+- User.
+- Date and time.
+- Affected workflow.
+- Record identifier.
+- Error message.
+- Browser or client details.
+- Reproduction steps.
+- Screenshots without unnecessary sensitive data.
+- Business impact.
+
+Support must not request passwords, MFA codes, or unnecessary customer documents.
+
+Confirmed platform issues should be assigned a severity and escalated through the incident process when appropriate.
+
+---
+
+## 23. Service Communications
+
+Customer-facing communications should be:
+
+- Accurate.
+- Timely.
+- Free from unsupported speculation.
+- Clear about customer impact.
+- Updated at reasonable intervals.
+- Closed with a recovery statement.
+
+For major incidents, communications may include:
+
+- Investigating.
+- Identified.
+- Monitoring.
+- Resolved.
+- Post-incident review.
+
+Security incidents require coordination with security, legal, privacy, and executive stakeholders before disclosing sensitive details.
+
+---
+
+## 24. Operational Metrics
+
+Track at minimum:
+
+- Service availability.
+- Request latency.
+- Error rate.
+- Incident count by severity.
+- Mean time to acknowledge.
+- Mean time to restore.
+- Backup success rate.
+- Restore-test success rate.
+- Notification success rate.
+- Background-job failure rate.
+- Support response time.
+- Capacity utilization.
+- Change failure rate.
+- Emergency-change frequency.
+
+Metrics should be used to improve operations rather than merely produce reports.
+
+---
+
+## 25. Recordkeeping
+
+Maintain records for:
+
+- Incidents.
+- Production changes.
+- Access reviews.
+- Backup tests.
+- Disaster-recovery exercises.
+- Customer provisioning.
+- Customer offboarding.
+- Security exceptions.
+- Vendor reviews.
+- Maintenance activities.
+- Corrective actions.
+
+Records must be protected from unauthorized alteration.
+
+---
+
+## 26. Operational Handoff
+
+Before transferring responsibility to another operator:
+
+- Review active incidents.
+- Review pending changes.
+- Review failed jobs.
+- Review customer escalations.
+- Review expiring credentials.
+- Review backup status.
+- Review unresolved security alerts.
+- Document any temporary configuration or workaround.
+
+The receiving operator must have enough information to continue service safely without relying on undocumented verbal knowledge.
+
+---
+
+## 27. Related Documents
+
+- Backup and Restore Standard
+- Disaster Recovery Guide
+- Incident Response Plan
+- Security Guide
+- Administrator Guide
+- Standard Operating Procedures Manual
+- Change Management Policy
+- Data Retention and Deletion Policy
+- Customer Support Policy
